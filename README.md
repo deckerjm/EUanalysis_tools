@@ -12,3 +12,5 @@ This is a repository for all the data scraping tools that I have created over th
   - `consultation_corpuscreation.py`: Extracts text from consultation response PDFs for analysis.
 
 Each tool is tailored to interact with specific EU websites and extract structured data for further analysis.
+
+DISCLAIMER: much of these files were created with the help of GitHub Copilot. 
