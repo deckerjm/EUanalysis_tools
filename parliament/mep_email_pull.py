@@ -10,8 +10,23 @@ import os
 import re
 import unicodedata
 
+'''
+This script scrapes email addresses of Members of the European Parliament (MEPs) from the European Parliament website.
+ 
+Input:
+- The script fetches an XML file containing a list of MEPs and their details from the European Parliament's website.
+ 
+Output:
+- A CSV file (`data/meps.csv`) containing the MEPs' details along with their scraped email addresses.
+
+Usage:
+- Ensure you have Python, Selenium, and the required dependencies installed.
+- Place the script in a directory and run it. It will fetch the MEP data, scrape their email addresses, and save the results to a CSV file.
+- Make sure you have the Chrome browser and the appropriate ChromeDriver installed for Selenium to work.
+'''
+
 # Create directory if it doesn't exist
-os.makedirs('data/raw', exist_ok=True)
+os.makedirs('data', exist_ok=True)
 
 # Fetch XML data using pandas
 url = 'https://www.europarl.europa.eu/meps/en/full-list/xml'
@@ -119,7 +134,7 @@ print(f"Scraped emails for {df['email'].notna().sum()} out of {len(df)} MEPs")
 driver.quit()
 
 # Save to CSV
-df.to_csv('data/raw/meps.csv', index=False)
+df.to_csv('data/meps.csv', index=False)
 print(f"Saved {len(df)} MEPs to CSV")
 
 # Setup Selenium

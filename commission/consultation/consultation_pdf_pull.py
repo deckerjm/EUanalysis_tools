@@ -8,6 +8,44 @@ from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 
+"""
+Script for downloading PDFs from consultation feedback URLs.
+This script automates the process of downloading PDFs from a list of feedback URLs 
+provided in a CSV file. This file can be generated using the consultation_meta_pull.py 
+It uses Selenium to interact with the web pages and locate 
+the download buttons for the PDFs. The downloaded PDFs are saved in a specified 
+directory, and the script updates the CSV file with information about the download 
+status and filenames.
+
+How to Use:
+1. Ensure you have the required dependencies installed:
+    - Python packages: selenium, pandas
+    - Chrome browser and the appropriate ChromeDriver for your browser version.
+2. Prepare the input CSV file:
+    - The CSV file should be located at `data/consultation_responses.csv`.
+    - It must contain at least two columns:
+      - `feedback_url`: The URL of the feedback page.
+      - `name`: A name or identifier for the feedback entry.
+3. Run the script:
+    - The script will navigate to each URL, attempt to download the PDF, and save it 
+      in the `data/consultation_pdfs` directory.
+    - The script will update the input CSV file with two new columns:
+      - `pdf_downloaded`: A boolean indicating whether the PDF was successfully downloaded.
+      - `pdf_filename`: The name of the downloaded PDF file (if applicable).
+4. Output:
+    - The updated CSV file will be saved at `data/consultation_responses.csv`.
+    - The downloaded PDFs will be saved in the `data/consultation_pdfs` directory.
+Inputs:
+- `data/consultation_responses.csv`: The input CSV file containing feedback URLs and names.
+Outputs:
+- Updated CSV file with download status and filenames.
+- Downloaded PDFs saved in the specified directory.
+Notes:
+- Ensure the ChromeDriver executable is in your system's PATH or specify its location 
+  when initializing the WebDriver.
+- The script includes random delays to mimic human behavior and avoid detection as a bot.
+"""
+
 # Set up Chrome options
 chrome_options = Options()
 chrome_options.add_argument('--start-maximized')
@@ -33,7 +71,7 @@ driver = webdriver.Chrome(options=chrome_options)
 wait = WebDriverWait(driver, 10)
 
 # Read existing CSV with feedback URLs
-df = pd.read_csv('data/clean/consultation_responses.csv')
+df = pd.read_csv('data/consultation_responses.csv')
 
 # Lists to store PDF info
 pdf_downloaded = []
@@ -134,7 +172,7 @@ df['pdf_downloaded'] = pdf_downloaded
 df['pdf_filename'] = pdf_filenames
 
 # Save updated dataframe
-df.to_csv('data/clean/consultation_responses.csv', index=False, encoding='utf-8')
+df.to_csv('data/consultation_responses.csv', index=False, encoding='utf-8')
 
 # Print summary
 print(f"\n{'='*60}")
@@ -143,7 +181,7 @@ print(f"{'='*60}")
 print(f"Total entries: {len(df)}")
 print(f"PDFs downloaded: {df['pdf_downloaded'].sum()}")
 print(f"PDFs missing: {(~df['pdf_downloaded']).sum()}")
-print(f"\nData saved to: data/clean/consultation_responses.csv")
+print(f"\nData saved to: data/consultation_responses.csv")
 print(f"PDFs saved in: {pdf_folder}")
 
 # Close the driver

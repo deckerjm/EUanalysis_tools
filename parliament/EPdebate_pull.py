@@ -9,7 +9,7 @@ from reportlab.platypus import SimpleDocTemplate, Paragraph, Spacer
 from reportlab.lib.units import inch
 import os
 
-def extract_ep_debate_data(xml_url, domain, date_str, start_number, output_csv='data/clean/ep_debate_data.csv'):
+def extract_ep_debate_data(xml_url, domain, date_str, start_number, output_csv='data/ep_debate_data.csv'):
     """
     Extract MEP intervention data from European Parliament XML debate files.
     

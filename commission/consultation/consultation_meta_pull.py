@@ -9,6 +9,36 @@ import pandas as pd
 import random
 import os
 
+"""
+This script automates the process of scraping feedback data from the European Commission's "Have Your Say" website 
+for a specific initiative. It uses Selenium to navigate through the website, extract metadata about feedback entries, 
+and download detailed feedback content. The script performs the following tasks:
+
+1. **Setup and Configuration**:
+    - Configures Selenium WebDriver with Chrome options to handle automated browsing.
+    - Sets up a folder for downloading PDF files and configures Chrome to save files directly to this folder.
+2. **Metadata Scraping**:
+    - Navigates to the main feedback page of the initiative.
+    - Iterates through all pages of feedback, extracting metadata such as the name, country, and feedback URL for each entry.
+    - Saves the metadata into a CSV file.
+3. **Detailed Feedback Extraction**:
+    - Visits each feedback URL to extract additional details, including:
+      - Feedback reference number.
+      - User type.
+      - Feedback text.
+    - Appends these details to the metadata and saves the complete dataset to a CSV file.
+
+**Inputs**:
+- The URL of the initiative's feedback page on the "Have Your Say" website. This is the one that lists all the comments.
+
+**Outputs**:
+- A CSV file (`data/consultation_responses.csv`) containing the scraped metadata and detailed feedback information.
+
+**Note**:
+- The script includes random delays to mimic human behavior and reduce the risk of being blocked by the website.
+- Ensure compliance with the website's terms of service before using this script.
+"""
+
 # Set up Chrome options
 chrome_options = Options()
 chrome_options.add_argument('--start-maximized')
@@ -16,7 +46,7 @@ chrome_options.add_argument('--disable-blink-features=AutomationControlled')
 chrome_options.add_argument('user-agent=Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36')
 
 # Create PDF folder and configure Chrome to download there
-pdf_folder = os.path.abspath('data/raw/consultation_pdfs')
+pdf_folder = os.path.abspath('data/consultation_pdfs')
 os.makedirs(pdf_folder, exist_ok=True)
 
 # Configure Chrome download preferences
@@ -114,7 +144,7 @@ try:
     
     # Convert to DataFrame and save
     df = pd.DataFrame(all_data)
-    df.to_csv('data/clean/consultation_responses.csv', index=False, encoding='utf-8')
+    df.to_csv('data/consultation_responses.csv', index=False, encoding='utf-8')
     print(f"\nTotal entries scraped: {len(all_data)}")
     print(f"Data saved to consultation_responses.csv")
     
@@ -195,7 +225,7 @@ df['user_type'] = user_types
 df['feedback_text'] = feedback_texts
 
 # Save updated dataframe
-df.to_csv('data/clean/consultation_responses.csv', index=False, encoding='utf-8')
+df.to_csv('data/consultation_responses.csv', index=False, encoding='utf-8')
 print(f"\nComplete data saved to consultation_responses.csv")
 
 # Close the driver

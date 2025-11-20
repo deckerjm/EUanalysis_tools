@@ -4,11 +4,41 @@ import PyPDF2
 import pdfplumber
 from pathlib import Path
 
+"""
+The script is designed to extract text from PDF files associated with consultation responses.
+
+The script processes a collection of PDF files and extracts their text content for analysis. 
+It is designed to work with a metadata CSV file that contains information about the PDF files, 
+including their filenames and associated metadata.
+
+Inputs:
+1. A metadata CSV file named 'data/consultation_responses.csv' with the following columns:
+    - 'name': The name or identifier of the entry.
+    - 'pdf_filename': The filename of the corresponding PDF file (relative to the 'data/consultation_pdfs' folder).
+
+2. A folder named 'data/consultation_pdfs' containing the PDF files to be processed.
+
+How to Use:
+1. Ensure the metadata CSV file and the folder containing the PDF files are in the correct locations.
+2. Run the script using Python.
+3. The script will process each entry in the CSV file, attempt to extract text from the corresponding PDF file, 
+    and store the extracted text in a new column ('pdf_text') in the CSV file.
+
+Outputs:
+1. The updated metadata CSV file ('data/consultation_responses.csv') with an additional column:
+    - 'pdf_text': The extracted text content of the PDF file (or an empty string if extraction failed).
+
+2. A summary of the processing results is printed to the console, including:
+    - The total number of entries processed.
+    - The number of PDFs with successfully extracted text.
+    - The number of PDFs where text extraction failed.
+"""
+
 # Read the metadata CSV
-df = pd.read_csv('data/clean/consultation_responses.csv')
+df = pd.read_csv('data/consultation_responses.csv')
 
 # Path to PDF folder
-pdf_folder = 'data/raw/consultation_pdfs'
+pdf_folder = 'data/consultation_pdfs'
 
 # List to store extracted PDF text
 pdf_texts = []
@@ -80,7 +110,7 @@ for idx, row in df.iterrows():
 df['pdf_text'] = pdf_texts
 
 # Save the updated dataframe
-output_path = 'data/clean/consultation_responses.csv'
+output_path = 'data/consultation_responses.csv'
 df.to_csv(output_path, index=False, encoding='utf-8')
 
 # Print summary
