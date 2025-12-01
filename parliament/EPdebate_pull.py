@@ -17,7 +17,7 @@ def extract_ep_debate_data(xml_url, domain, date_str, start_number, output_csv='
         xml_url: URL to the XML file
         domain: Domain identifier for URN
         date_str: Date in format YYMMDD (e.g., '201219' for 19 Dec 2020)
-        start_number: Starting number for consecutive URN numbering
+        start_number: Starting number for consecutive URN numbering. This is required to allow consecutive numbering of debates when they are found on different subpages of the parliamentary website. 
         output_csv: Output CSV filename
     """
     # Fetch XML content
