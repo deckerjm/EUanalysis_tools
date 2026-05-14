@@ -31,13 +31,13 @@ This is a repository for all the data scraping tools that I have created over th
     4. Exports the collected metadata to a CSV file
     
     Dependencies:
-      - requests: For making HTTP POST requests to the SOAP endpoint
-      - xml.etree.ElementTree: For parsing XML/SOAP responses
-      - pandas: For data manipulation and CSV export
+    - requests: For making HTTP POST requests to the SOAP endpoint
+    - xml.etree.ElementTree: For parsing XML/SOAP responses
+    - pandas: For data manipulation and CSV export
 
     Configuration:
-      USERNAME: EUR-Lex web service username credential
-      PASSWORD: EUR-Lex web service password credential
+    - USERNAME: EUR-Lex web service username credential
+    - PASSWORD: EUR-Lex web service password credential
 
     Output:
       CSV file containing document metadata saved to 'data/EURLEX/eurlex_metadata.csv'
