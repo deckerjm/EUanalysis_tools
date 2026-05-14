@@ -6,13 +6,14 @@ This is a repository for all the data scraping tools that I have created over th
   - `mep_email_pull.py`: Scrapes email addresses of Members of the European Parliament (MEPs) from the European Parliament website.
   - `EPdebate_pull.py`: Extracts intervention data from European Parliament XML debate files and saves them as CSV or PDFs.
 
-- **DSA Transparency Tools**:
-For these tools you will need to use the DSA-TSB documentation, which you can find at https://dsa.pages.code.europa.eu/transparency-database/dsa-tdb/index.html
+- **DSA Transparency Tools**: 
 
-The full dataset and description of the dataset can be found at https://transparency.dsa.ec.europa.eu/
+    For these tools you will need to use the DSA-TSB documentation, which you can find at https://dsa.pages.code.europa.eu/transparency-database/dsa-tdb/index.html
 
-- `tdb_data-pull.py`: Pulls the data and prepares a profile of the dataset
-- `tdb_visualisations.py` : Creates a series of visualisations and corresponding csv files with the data.
+    The full dataset and description of the dataset can be found at https://transparency.dsa.ec.europa.eu/
+    
+    - `tdb_data-pull.py`: Pulls the data and prepares a profile of the dataset
+    - `tdb_visualisations.py` : Creates a series of visualisations and corresponding csv files with the data.
 
 
 - **Commission Tools**:
@@ -21,28 +22,31 @@ The full dataset and description of the dataset can be found at https://transpar
   - `consultation_corpuscreation.py`: Extracts text from consultation response PDFs for analysis.
 
 - **EUR-LEX Tools**
-- `EUR-Lex Web Service API Client`: This module provides functionality to query the EUR-Lex SOAP web service
-to retrieve metadata about EU legislation documents. It authenticates using
+    - `EUR-Lex Web Service API Client`: This module provides functionality to query the EUR-Lex SOAP web service to retrieve metadata about EU legislation documents. It authenticates using
 
-  The script:
-  1. Makes authenticated SOAP requests to the EUR-Lex web service
-  2. Parses XML responses to extract document metadata (title, date, 
-      institution, Cellar URI, Cellar ID, and CELEX number)
-  3. Iterates through multiple pages of results
-  4. Exports the collected metadata to a CSV file
-  Dependencies:
+    The script:
+    1. Makes authenticated SOAP requests to the EUR-Lex web service
+    2. Parses XML responses to extract document metadata (title, date, institution, Cellar URI, Cellar ID, and CELEX number)
+    3. Iterates through multiple pages of results
+    4. Exports the collected metadata to a CSV file
+    
+    Dependencies:
       - requests: For making HTTP POST requests to the SOAP endpoint
       - xml.etree.ElementTree: For parsing XML/SOAP responses
       - pandas: For data manipulation and CSV export
-  Configuration:
+
+    Configuration:
       USERNAME: EUR-Lex web service username credential
       PASSWORD: EUR-Lex web service password credential
-  Output:
+
+    Output:
       CSV file containing document metadata saved to 'data/EURLEX/eurlex_metadata.csv'
-  Example Usage:
+
+    Example Usage:
       Run this script directly to fetch EU legislation documents matching
       the expert query (DTS_SUBDOM = LEGISLATION AND DC_CODED = 6088).
-  Note:
+
+    Note:
       Requires valid EUR-Lex web service credentials. Rate limiting is 
       implemented with a 1-second delay between API calls.  
 
