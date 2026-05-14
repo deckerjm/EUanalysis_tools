@@ -1,10 +1,19 @@
 # EUanalysis_tools
-This is a repository for all the data scraping tools that I have created over the years. All of them engage with the EU websites or EU institutions and are designed to gather data from them.
+This is a repository for all the data scraping tools that I have created over the years. All of them engage with the EU websites or EU institutions and are designed to gather data from them. All outputs are stored in the /output subfolder.
 
 ## Tools Overview
 - **Parliament Tools**:
   - `mep_email_pull.py`: Scrapes email addresses of Members of the European Parliament (MEPs) from the European Parliament website.
   - `EPdebate_pull.py`: Extracts intervention data from European Parliament XML debate files and saves them as CSV or PDFs.
+
+- **DSA Transparency Tools**:
+For these tools you will need to use the DSA-TSB documentation, which you can find at https://dsa.pages.code.europa.eu/transparency-database/dsa-tdb/index.html
+
+The full dataset and description of the dataset can be found at https://transparency.dsa.ec.europa.eu/
+
+- `tdb_data-pull.py`: Pulls the data and prepares a profile of the dataset
+- `tdb_visualisations.py` : Creates a series of visualisations and corresponding csv files with the data.
+
 
 - **Commission Tools**:
   - `consultation_meta_pull.py`: Scrapes metadata and feedback data from the European Commission's "Have Your Say" website.
