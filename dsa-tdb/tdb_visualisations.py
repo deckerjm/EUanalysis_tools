@@ -745,9 +745,9 @@ SELECT
     SUM(count) AS moderation_actions
 FROM read_parquet('{path}')
 WHERE
-    (
-        DECISION_VISIBILITY_CONTENT_REMOVED = TRUE
-        OR DECISION_VISIBILITY_CONTENT_DISABLED = TRUE
+    decision_account IN (
+        'DECISION_ACCOUNT_TERMINATED',
+        'DECISION_ACCOUNT_SUSPENDED'
     )
     AND application_date >= DATE '2026-01-01'
     AND application_date < DATE '2026-05-01'
@@ -789,7 +789,7 @@ plt.pie(
     startangle=90
 )
 
-plt.title("Removed / Disabled Content by Account Type")
+plt.title("Terminated / Suspended Accounts by Account Type")
 
 plt.subplots_adjust(
     left=0.05,
