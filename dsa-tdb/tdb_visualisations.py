@@ -8,9 +8,9 @@ import pandas as pd
 from matplotlib.ticker import FuncFormatter
 
 mpl.rcParams['font.family'] = 'Arial'
-mpl.rcParams['font.size'] = 12
-mpl.rcParams['axes.titlesize'] = 14
-mpl.rcParams['axes.labelsize'] = 12
+mpl.rcParams['font.size'] = 10
+mpl.rcParams['axes.titlesize'] = 12
+mpl.rcParams['axes.labelsize'] = 10
 
 def millions(x, pos):
     return f'{x/1_000_000:.0f}mn'
@@ -110,7 +110,7 @@ removals_by_platform["actions_per_million_users"] = (
     / removals_by_platform["platform"].map(monthly_active_users)
 ) * 1_000_000
 
-plt.figure(figsize=(10, 6))
+plt.figure(figsize=(5.8, 3.6))
 
 plt.barh(
     removals_by_platform["platform"],
@@ -184,7 +184,7 @@ timechart_wide = timechart.pivot_table(
 # Replace tiny values with NaN for cleaner log-scale plotting
 #timechart_wide = timechart_wide.mask(timechart_wide < 0.1)
 
-plt.figure(figsize=(12, 7))
+plt.figure(figsize=(5.8, 3.6))
 
 for platform in [
     "Facebook",
@@ -253,7 +253,7 @@ automation_colours = {
     "Not automated": "#C69214"
 }
 
-plt.figure(figsize=(9, 6))
+plt.figure(figsize=(5.8, 3.6))
 
 plt.bar(
     automation_chart["automation_label"],
@@ -309,7 +309,7 @@ reason_colours = {
     "Illegal content": "#A61C3C"
 }
 
-plt.figure(figsize=(8, 6))
+plt.figure(figsize=(5.8, 3.6))
 
 plt.bar(
     removal_reason_chart["reason_label"],
@@ -395,7 +395,7 @@ category_colours = [
     for i in range(len(category_chart))
 ]
 
-plt.figure(figsize=(12, 8))
+plt.figure(figsize=(5.8, 3.6))
 
 plt.barh(
     category_chart["statement_category"],
@@ -570,7 +570,7 @@ source_colours = {
     "Trusted flagger": "#C69214"
 }
 
-plt.figure(figsize=(10, 6))
+plt.figure(figsize=(5.8, 3.6))
 
 plt.barh(
     source_type_chart["source_label"],
