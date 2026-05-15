@@ -15,6 +15,9 @@ mpl.rcParams['axes.labelsize'] = 10
 def millions(x, pos):
     return f'{x/1_000_000:.0f}mn'
 
+def billions(x, pos):
+    return f'{x/1_000_000_000:.1f}bn'
+
 con = duckdb.connect()
 
 path = "data/tdb/aggregated-complete.parquet"
@@ -655,3 +658,151 @@ plt.savefig(
 
 plt.show()
 
+# =========================================================
+# 8. Removed / disabled product content over time
+# =========================================================
+
+product_timechart = con.execute(f"""
+SELECT
+    DATE_TRUNC('month', application_date) AS application_month,
+    SUM(count) AS moderation_actions
+FROM read_parquet('{path}')
+WHERE
+    (
+        DECISION_VISIBILITY_CONTENT_REMOVED = TRUE
+        OR DECISION_VISIBILITY_CONTENT_DISABLED = TRUE
+    )
+    AND CONTENT_TYPE_PRODUCT = TRUE
+    AND application_date >= DATE '2024-01-01'
+    AND application_date < DATE '2026-05-01'
+GROUP BY application_month
+ORDER BY application_month
+""").fetchdf()
+
+product_timechart.to_csv(
+    "output/product_content_removed_disabled_timechart.csv",
+    index=False
+)
+
+print(product_timechart)
+
+product_timechart["application_month"] = pd.to_datetime(
+    product_timechart["application_month"]
+)
+
+plt.figure(figsize=(6.2, 3.8))
+
+plt.fill_between(
+    product_timechart["application_month"],
+    product_timechart["moderation_actions"],
+    color=qmul_blue,
+    alpha=0.35
+)
+
+plt.plot(
+    product_timechart["application_month"],
+    product_timechart["moderation_actions"],
+    color=qmul_blue,
+    marker="o",
+    linewidth=2
+)
+
+plt.xlim(
+    pd.Timestamp("2024-01-01"),
+    pd.Timestamp("2026-05-01")
+)
+
+plt.xlabel("Application month")
+plt.ylabel("Removal / disable decisions")
+plt.title("Removed / Disabled Product Content Over Time")
+plt.gca().yaxis.set_major_formatter(FuncFormatter(billions))
+plt.xticks(rotation=45)
+plt.grid(axis="y", alpha=0.3)
+
+plt.subplots_adjust(
+    left=0.16,
+    right=0.98,
+    top=0.88,
+    bottom=0.28
+)
+
+plt.savefig(
+    "output/product_content_removed_disabled_timechart.png",
+    dpi=300,
+    bbox_inches="tight",
+    pad_inches=0.05
+)
+
+plt.show()
+
+# =========================================================
+# 9. Removed / disabled content by account type
+# =========================================================
+
+account_type_chart = con.execute(f"""
+SELECT
+    account_type,
+    SUM(count) AS moderation_actions
+FROM read_parquet('{path}')
+WHERE
+    (
+        DECISION_VISIBILITY_CONTENT_REMOVED = TRUE
+        OR DECISION_VISIBILITY_CONTENT_DISABLED = TRUE
+    )
+    AND application_date >= DATE '2026-01-01'
+    AND application_date < DATE '2026-05-01'
+    AND account_type IN (
+        'ACCOUNT_TYPE_BUSINESS',
+        'ACCOUNT_TYPE_PRIVATE'
+    )
+GROUP BY account_type
+ORDER BY moderation_actions DESC
+""").fetchdf()
+
+account_type_chart.to_csv(
+    "output/account_type_removed_disabled.csv",
+    index=False
+)
+
+print(account_type_chart)
+
+account_type_chart["account_label"] = account_type_chart["account_type"].replace({
+    "ACCOUNT_TYPE_BUSINESS": "Business account",
+    "ACCOUNT_TYPE_PRIVATE": "Private account"
+})
+
+account_colours = {
+    "Business account": "#003865",
+    "Private account": "#C69214"
+}
+
+plt.figure(figsize=(5.2, 3.8))
+
+plt.pie(
+    account_type_chart["moderation_actions"],
+    labels=account_type_chart["account_label"],
+    colors=[
+        account_colours.get(a, qmul_blue)
+        for a in account_type_chart["account_label"]
+    ],
+    autopct="%1.1f%%",
+    startangle=90
+)
+
+plt.title("Removed / Disabled Content by Account Type")
+
+plt.subplots_adjust(
+    left=0.05,
+    right=0.95,
+    top=0.88,
+    bottom=0.05
+)
+
+plt.savefig(
+    "output/account_type_removed_disabled.png",
+    dpi=300,
+    bbox_inches="tight",
+    pad_inches=0.05
+)
+
+plt.show()
