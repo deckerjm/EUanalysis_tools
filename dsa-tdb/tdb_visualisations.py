@@ -412,7 +412,7 @@ plt.savefig("output/statement_category_removed_content.png", dpi=300)
 plt.show()
 
 # =========================================================
-# 6. Keywords for removed / disabled content (the keywords provide more granularity than the category, and content can be tagged with up to two keywords, so this gives a more detailed picture of the types of content removed/disabled)
+# 6a. Keywords for removed / disabled content (the keywords provide more granularity than the category, and content can be tagged with up to two keywords, so this gives a more detailed picture of the types of content removed/disabled)
 # =========================================================
 
 keywords = {
@@ -525,6 +525,65 @@ plt.title("Keywords in Removed / Disabled Content")
 plt.xscale("log")
 plt.tight_layout()
 plt.savefig("output/keyword_removed_content.png", dpi=300)
+plt.show()
+
+# =========================================================
+# 6b. Top 15 keywords for removed / disabled content
+# =========================================================
+
+top_keywords_chart = (
+    keyword_chart
+    .sort_values("moderation_actions", ascending=False)
+    .head(15)
+    .sort_values("moderation_actions", ascending=False)
+)
+
+top_keywords_chart.to_csv(
+    "output/top15_keyword_removed_content.csv",
+    index=False
+)
+
+print(top_keywords_chart)
+
+top_keyword_colours = [
+    "#003865" if i % 2 == 0 else "#005EB8"
+    for i in range(len(top_keywords_chart))
+]
+
+plt.figure(figsize=(6.2, 3.8))
+
+plt.bar(
+    top_keywords_chart["keyword"],
+    top_keywords_chart["moderation_actions"],
+    color=top_keyword_colours
+)
+
+plt.xlabel("Keyword")
+plt.ylabel("Removal / disable decisions")
+plt.title("Top 15 Keywords in Removed / Disabled Content")
+
+plt.yscale("log")
+
+plt.xticks(
+    rotation=45,
+    ha="right",
+    fontsize=9
+)
+
+plt.subplots_adjust(
+    left=0.12,
+    right=0.98,
+    top=0.88,
+    bottom=0.35
+)
+
+plt.savefig(
+    "output/top15_keyword_removed_content.png",
+    dpi=300,
+    bbox_inches="tight",
+    pad_inches=0.05
+)
+
 plt.show()
 
 # =========================================================
