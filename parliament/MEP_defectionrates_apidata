@@ -50,17 +50,20 @@ df.to_csv("data/raw/votes_all.csv", index=False)
 # 3. Calculate party majority position
 # -----------------------------
 
-group_vote_columns = [
-    "group_FOR",
-    "group_AGAINST",
-    "group_ABSTENTION"
-]
+group_position_columns = {
+    "FOR": "group_FOR",
+    "AGAINST": "group_AGAINST",
+    "ABSTENTION": "group_ABSTENTION",
+    "DID_NOT_VOTE": "group_DID_NOT_VOTE"
+}
 
-# Identify the majority position within each political group
 analysis_df["party.pos"] = (
-    analysis_df[group_vote_columns]
+    analysis_df[list(group_position_columns.values())]
+    .rename(columns={
+        value: key
+        for key, value in group_position_columns.items()
+    })
     .idxmax(axis=1)
-    .str.replace("group_", "", regex=False)
 )
 
 # -----------------------------
@@ -70,7 +73,8 @@ analysis_df["party.pos"] = (
 country_position_columns = {
     "FOR": "country_FOR",
     "AGAINST": "country_AGAINST",
-    "ABSTENTION": "country_ABSTENTION"
+    "ABSTENTION": "country_ABSTENTION",
+    "DID_NOT_VOTE": "country_DID_NOT_VOTE"
 }
 
 analysis_df["country.pos"] = (
