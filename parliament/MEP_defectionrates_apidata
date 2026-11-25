@@ -44,6 +44,7 @@ analysis_df = df[
 
 analysis_df = analysis_df[analysis_df["position"] != "DID_NOT_VOTE"].copy()
 
+df.to_csv("data/raw/votes_all.csv", index=False)
 
 # -----------------------------
 # 3. Calculate party majority position
