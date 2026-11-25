@@ -20,7 +20,7 @@ import src.howtheyvote_api as htv
 df = htv.get_votes_for_list(
     #date = None  # Filter votes by date and return only votes that were cast on the given date.
 
-    date_gte ="2026-11-01" # Filter votes by date and return only votes that were cast on or after the given date
+    date_gte ="2019-07-01" # Filter votes by date and return only votes that were cast on or after the given date
 
     #date_lte = None # Filter votes by date and return only votes that were cast on or before the given date
 
@@ -28,10 +28,21 @@ df = htv.get_votes_for_list(
 )
 
 # -----------------------------
-# 2. Optional: exclude non-votes
+# 2. Optional: exclude non-votes and sort by topic or other filters
 # -----------------------------
 
-analysis_df = df[df["position"] != "DID_NOT_VOTE"].copy()
+selected_topic = "digital"
+
+analysis_df = df[
+    df["topics"].apply(
+        lambda topics: any(
+            topic["code"] == selected_topic
+            for topic in topics
+        ) if isinstance(topics, list) else False
+    )
+].copy()
+
+analysis_df = analysis_df[analysis_df["position"] != "DID_NOT_VOTE"].copy()
 
 
 # -----------------------------
