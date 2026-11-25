@@ -1,0 +1,182 @@
+########
+# use API data from howtheyvote.eu to analyze MEP defection rates. 
+########
+
+import sys
+from pathlib import Path
+
+# Add project root to Python search path
+sys.path.insert(0, str(Path.cwd()))
+
+import pandas as pd
+from pathlib import Path
+import src.howtheyvote_api as htv
+
+
+# -----------------------------
+# 1. Load all votes data
+# -----------------------------
+
+df = htv.get_votes_for_list(
+    #date = None  # Filter votes by date and return only votes that were cast on the given date.
+
+    date_gte ="2026-11-01" # Filter votes by date and return only votes that were cast on or after the given date
+
+    #date_lte = None # Filter votes by date and return only votes that were cast on or before the given date
+
+    #facets =  # Return facet options for the given fields. Can be set multiple times (Allowed values are geo_areas, responsible_committees, topics, month)
+)
+
+# -----------------------------
+# 2. Optional: exclude non-votes
+# -----------------------------
+
+analysis_df = df[df["position"] != "DID_NOT_VOTE"].copy()
+
+
+# -----------------------------
+# 3. Calculate party majority position
+# -----------------------------
+
+group_vote_columns = [
+    "group_FOR",
+    "group_AGAINST",
+    "group_ABSTENTION"
+]
+
+# Identify the majority position within each political group
+analysis_df["party.pos"] = (
+    analysis_df[group_vote_columns]
+    .idxmax(axis=1)
+    .str.replace("group_", "", regex=False)
+)
+
+# -----------------------------
+# 4. Calculate country majority position
+# -----------------------------
+
+country_position_columns = {
+    "FOR": "country_FOR",
+    "AGAINST": "country_AGAINST",
+    "ABSTENTION": "country_ABSTENTION"
+}
+
+analysis_df["country.pos"] = (
+    analysis_df[list(country_position_columns.values())]
+    .rename(columns={
+        value: key
+        for key, value in country_position_columns.items()
+    })
+    .idxmax(axis=1)
+)
+
+# -----------------------------
+# 5. Calculate defection indicator
+# -----------------------------
+
+analysis_df["party_defected"] = (
+    analysis_df["position"] != analysis_df["party.pos"]
+)
+
+analysis_df["country_defected"] = (
+    analysis_df["position"] != analysis_df["country.pos"]
+)
+
+# -----------------------------
+# 6. Calculate individual MEP defection rates
+# -----------------------------
+
+# Individual MEP defection rate within their political group
+analysis_df["mep_party_defection_rate"] = (
+    analysis_df
+    .groupby(
+        ["member_id", "member_group_short_label"]
+    )["party_defected"]
+    .transform("mean") * 100
+)
+
+# Individual MEP defection rate within their country
+analysis_df["mep_country_defection_rate"] = (
+    analysis_df
+    .groupby(
+        ["member_id", "member_country_code"]
+    )["country_defected"]
+    .transform("mean") * 100
+)
+
+# -----------------------------
+# 7. Calculate defection rate by party and by country
+# -----------------------------
+
+party_defection_rates = (
+    analysis_df
+    .groupby("member_group_short_label")
+    .agg(
+        total_votes=("party_defected", "size"),
+        defections=("party_defected", "sum"),
+        party_defection_rate=("party_defected", "mean")
+    )
+    .reset_index()
+)
+
+party_defection_rates["party_defection_rate_pct"] = (
+    party_defection_rates["party_defection_rate"] * 100
+)
+
+party_defection_rates = party_defection_rates.sort_values(
+    "party_defection_rate_pct",
+    ascending=False
+)
+
+country_defection_rates = (
+    analysis_df
+    .groupby("member_country_code")
+    .agg(
+        total_votes=("country_defected", "size"),
+        defections=("country_defected", "sum"),
+        country_defection_rate=("country_defected", "mean")
+    )
+    .reset_index()
+)
+
+country_defection_rates["country_defection_rate_pct"] = (
+    country_defection_rates["country_defection_rate"] * 100
+)
+
+country_defection_rates = country_defection_rates.sort_values(
+    "country_defection_rate_pct",
+    ascending=False
+)
+
+
+# -----------------------------
+# 8. Save outputs
+# -----------------------------
+
+analysis_df.to_csv(
+    "output/mep_votes_with_party_position.csv",
+    index=False
+)
+
+party_defection_rates.to_csv(
+    "output/party_defection_rates.csv",
+    index=False
+)
+
+country_defection_rates.to_csv(
+    "output/country_defection_rates.csv",
+    index=False
+)
+
+# -----------------------------
+# 9. View results
+# -----------------------------
+
+print("Combined vote-level dataset:")
+print(analysis_df.head())
+
+print("\nParty defection rates:")
+print(party_defection_rates)
+
+print("\nCountry defection rates:")
+print(country_defection_rates)
